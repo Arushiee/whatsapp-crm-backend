@@ -1,9 +1,6 @@
 const ContactService = require('../services/ContactService');
 
 class ContactController {
-  /**
-   * Get all contacts (supports query filters like leadStatus, tag, assignedAgent)
-   */
   async getAllContacts(req, res, next) {
     try {
       const contacts = await ContactService.getAllContacts(req.query);
@@ -17,9 +14,6 @@ class ContactController {
     }
   }
 
-  /**
-   * Get specific contact by ID
-   */
   async getContactById(req, res, next) {
     try {
       const contact = await ContactService.getContactById(req.params.id);
@@ -32,9 +26,6 @@ class ContactController {
     }
   }
 
-  /**
-   * Create a new contact
-   */
   async createContact(req, res, next) {
     try {
       const { name, phone, email, avatar, leadStatus, assignedAgent, tags, notes, followUpDate } = req.body;
@@ -58,9 +49,6 @@ class ContactController {
     }
   }
 
-  /**
-   * Update a contact (supports updating leadStatus, assignedAgent, notes, tags, followUpDate, name, phone, email, etc.)
-   */
   async updateContact(req, res, next) {
     try {
       const updateFields = {};
@@ -80,7 +68,6 @@ class ContactController {
         updateFields.followUpDate = null;
       }
       await ContactService.updateContact(req.params.id, updateFields);
-      // Re-fetch with conversation merge so assignedAgent is correct
       const updatedContact = await ContactService.getContactById(req.params.id);
       res.status(200).json({
         status: 'success',
@@ -91,9 +78,6 @@ class ContactController {
     }
   }
 
-  /**
-   * Mark contact messages as read (sets unreadCount to 0)
-   */
   async markAsRead(req, res, next) {
     try {
       await ContactService.updateContact(req.params.id, { unreadCount: 0 });
@@ -107,9 +91,20 @@ class ContactController {
     }
   }
 
-  /**
-   * Delete contact
-   */
+  // ✅ NEW: added missing markAsUnread method
+  async markAsUnread(req, res, next) {
+    try {
+      await ContactService.updateContact(req.params.id, { unreadCount: 1 });
+      const updatedContact = await ContactService.getContactById(req.params.id);
+      res.status(200).json({
+        status: 'success',
+        data: { contact: updatedContact }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async deleteContact(req, res, next) {
     try {
       await ContactService.deleteContact(req.params.id);
