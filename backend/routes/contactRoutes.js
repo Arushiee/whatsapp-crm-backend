@@ -12,7 +12,7 @@ router.route('/')
   .post(createContactValidator, contactController.createContact);
 
 router.patch('/:id/read', contactController.markAsRead);
-
+router.patch('/:id/unread', ContactController.markAsUnread);
 router.route('/:id')
   .get(contactController.getContactById)
   .put(updateContactValidator, contactController.updateContact)

@@ -106,6 +106,18 @@ class ContactController {
       next(error);
     }
   }
+  async markAsUnread(req, res, next) {
+  try {
+    await ContactService.markAsUnread(req.params.id);
+    const updatedContact = await ContactService.getContactById(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: { contact: updatedContact }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
   /**
    * Delete contact

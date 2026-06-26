@@ -147,6 +147,13 @@ class ContactService {
     await contact.save();
     return contact;
   }
+  async markAsUnread(id) {
+  const contact = await Contact.findByPk(id);
+  if (!contact) throw new AppError('Contact not found', 404);
+  contact.unreadCount = 1;
+  await contact.save();
+  return contact;
+}
 }
 
 module.exports = new ContactService();
